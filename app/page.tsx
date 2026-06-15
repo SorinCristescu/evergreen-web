@@ -1,9 +1,9 @@
 import { GardenBackground } from "@/components/garden/GardenBackground";
 import { ScrollEngine } from "@/components/ScrollEngine";
 import { ProgressBar } from "@/components/ProgressBar";
-import { SectionNav } from "@/components/SectionNav";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
+// SectionNav now lives inside Header
 import { Loop } from "@/components/Loop";
 import { Walk } from "@/components/Walk";
 import { Pricing } from "@/components/Pricing";
@@ -26,7 +26,6 @@ export default function Home() {
       <ScrollEngine />
 
       <Header />
-      <SectionNav />
 
       <main id="top">
         <Hero />
