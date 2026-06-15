@@ -69,7 +69,10 @@ header .wordmark .mark{width:42px;height:42px}
   box-shadow:var(--neu-raised-sm);transition:transform .25s,box-shadow .25s,color .25s;}
 .btn:hover{transform:translateY(-2px)} .btn:active{box-shadow:var(--neu-pressed)} .btn .ico{width:16px;height:16px}
 
-.dots{display:flex;flex-direction:row;gap:clamp(18px,2.4vw,34px);align-items:center;margin-left:auto;margin-right:clamp(18px,2.2vw,30px);}
+.hdr-right{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:clamp(18px,2.4vw,32px);}
+.hdr-right .btn{flex:0 0 auto}
+.dots{display:flex;flex-direction:row;flex-wrap:nowrap;gap:clamp(16px,2.2vw,30px);align-items:center;}
+.dots a{flex:0 0 auto}
 .dots a{position:relative;display:inline-flex;align-items:center;text-decoration:none;color:var(--fg-subtle);cursor:pointer;
   font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;transition:color .25s;padding:4px 0;}
 .dots a:hover{color:var(--ever-700)}
