@@ -94,8 +94,8 @@ h2{font-size:clamp(30px,5.2vw,58px)} h3{font-size:clamp(20px,2.4vw,28px);letter-
 body.no-anim .reveal{opacity:1;transform:none}
 
 /* ---------- hero ---------- */
-.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;max-width:none;padding-top:120px}
-.hero-inner{max-width:880px;transform:translateY(-50px)}
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;text-align:center;max-width:none;padding-top:104px}
+.hero-inner{max-width:880px}
 .hero .bloom-hero{width:clamp(86px,12vw,130px);height:auto;margin:0 auto 30px;display:block;animation:breathe 6s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){.hero .bloom-hero{animation:none}}
 .hero-motto{font-family:var(--font-mono);font-size:clamp(12px,1.4vw,14px);letter-spacing:.3em;text-transform:uppercase;color:var(--ever-500);margin:0 0 20px}

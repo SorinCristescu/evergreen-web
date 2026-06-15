@@ -433,6 +433,349 @@ export default function GardenCanvas() {
       return tex(c);
     }
 
+    /* a cosy gable-front cottage on a transparent ground */
+    function makeHouse() {
+      const c = document.createElement("canvas");
+      c.width = 460;
+      c.height = 460;
+      const x = c.getContext("2d")!;
+      const cx = 230,
+        left = 92,
+        right = 368,
+        wallTop = 214,
+        base = 440,
+        apex = 104;
+
+      // ground shadow
+      x.fillStyle = "rgba(18,36,22,.20)";
+      x.beginPath();
+      x.ellipse(cx, 448, 172, 20, 0, 0, 6.28);
+      x.fill();
+
+      // gable triangle wall
+      const wallCol = "#ece1cb";
+      x.fillStyle = wallCol;
+      x.beginPath();
+      x.moveTo(left, wallTop);
+      x.lineTo(cx, apex);
+      x.lineTo(right, wallTop);
+      x.closePath();
+      x.fill();
+      x.fillStyle = "rgba(0,0,0,.07)"; // shade the right half of the gable
+      x.beginPath();
+      x.moveTo(cx, apex);
+      x.lineTo(right, wallTop);
+      x.lineTo(cx, wallTop);
+      x.closePath();
+      x.fill();
+
+      // body wall with a soft side-to-side gradient
+      const wg = x.createLinearGradient(left, 0, right, 0);
+      wg.addColorStop(0, lighten(wallCol, 0.05));
+      wg.addColorStop(0.6, wallCol);
+      wg.addColorStop(1, darken(wallCol, 0.1));
+      x.fillStyle = wg;
+      x.fillRect(left, wallTop, right - left, base - wallTop);
+      // faint plaster grain
+      for (let i = 0; i < 70; i++) {
+        x.globalAlpha = 0.05;
+        x.fillStyle = i % 2 ? "#ffffff" : "#7a6a4e";
+        x.fillRect(left + rand() * (right - left), wallTop + rand() * (base - wallTop), 4 + rand() * 16, 1.5);
+      }
+      x.globalAlpha = 1;
+
+      // overhanging roof boards
+      x.lineWidth = 22;
+      x.lineCap = "round";
+      const eaveX = 40,
+        eaveY = 24;
+      let rg = x.createLinearGradient(left - eaveX, wallTop + eaveY, cx, apex);
+      rg.addColorStop(0, "#a8492a");
+      rg.addColorStop(1, "#c86c44");
+      x.strokeStyle = rg;
+      x.beginPath();
+      x.moveTo(cx, apex - 6);
+      x.lineTo(left - eaveX, wallTop + eaveY);
+      x.stroke();
+      rg = x.createLinearGradient(cx, apex, right + eaveX, wallTop + eaveY);
+      rg.addColorStop(0, "#c86c44");
+      rg.addColorStop(1, "#a8492a");
+      x.strokeStyle = rg;
+      x.beginPath();
+      x.moveTo(cx, apex - 6);
+      x.lineTo(right + eaveX, wallTop + eaveY);
+      x.stroke();
+
+      // chimney + a wisp of smoke
+      x.fillStyle = "#8c4a36";
+      x.fillRect(right - 78, apex + 34, 30, 84);
+      x.fillStyle = "#6f3a2a";
+      x.fillRect(right - 82, apex + 28, 38, 12);
+      for (let i = 0; i < 4; i++) {
+        x.globalAlpha = 0.5 - i * 0.08;
+        x.fillStyle = "#dcdcd2";
+        x.beginPath();
+        x.arc(right - 63 + i * 5, apex + 16 - i * 16, 8 + i * 3, 0, 6.28);
+        x.fill();
+      }
+      x.globalAlpha = 1;
+
+      // arched door
+      const dw = 58,
+        dh = 104,
+        dx = cx - dw / 2,
+        dy = base - dh;
+      x.fillStyle = "#6f4a2c";
+      x.beginPath();
+      x.moveTo(dx, base);
+      x.lineTo(dx, dy + 24);
+      x.arc(cx, dy + 24, dw / 2, Math.PI, 2 * Math.PI);
+      x.lineTo(dx + dw, base);
+      x.closePath();
+      x.fill();
+      x.strokeStyle = "rgba(0,0,0,.25)";
+      x.lineWidth = 2;
+      x.strokeRect(dx + 8, dy + 30, dw - 16, dh - 40);
+      x.fillStyle = "#e8c24a"; // brass knob
+      x.beginPath();
+      x.arc(dx + dw - 15, dy + dh * 0.62, 4, 0, 6.28);
+      x.fill();
+      x.fillStyle = "#bdb4a0"; // step
+      x.fillRect(dx - 10, base - 8, dw + 20, 8);
+
+      // two windows with white mullions, sills and flower boxes
+      const drawWindow = (wx: number, wy: number, ww: number, wh: number) => {
+        x.fillStyle = "#5b3f28";
+        x.fillRect(wx - 5, wy - 5, ww + 10, wh + 10);
+        const gg = x.createLinearGradient(wx, wy, wx + ww, wy + wh);
+        gg.addColorStop(0, "#c4dadf");
+        gg.addColorStop(0.5, "#8fb4bd");
+        gg.addColorStop(1, "#6f99a3");
+        x.fillStyle = gg;
+        x.fillRect(wx, wy, ww, wh);
+        x.strokeStyle = "#f3efe6";
+        x.lineWidth = 3;
+        x.beginPath();
+        x.moveTo(wx + ww / 2, wy);
+        x.lineTo(wx + ww / 2, wy + wh);
+        x.moveTo(wx, wy + wh / 2);
+        x.lineTo(wx + ww, wy + wh / 2);
+        x.stroke();
+        x.fillStyle = "#cfc6b2"; // sill
+        x.fillRect(wx - 8, wy + wh, ww + 16, 8);
+        x.fillStyle = "#7a4a2e"; // flower box
+        x.fillRect(wx - 6, wy + wh + 8, ww + 12, 13);
+        for (let i = 0; i < 6; i++) {
+          x.fillStyle = pick(["#e0533a", "#e8a0bf", "#f4b400", "#ffffff"]);
+          x.beginPath();
+          x.arc(wx - 6 + (i + 0.5) * ((ww + 12) / 6), wy + wh + 8, 5, 0, 6.28);
+          x.fill();
+        }
+      };
+      drawWindow(left + 28, wallTop + 46, 72, 82);
+      drawWindow(right - 100, wallTop + 46, 72, 82);
+
+      // round gable window
+      x.fillStyle = "#5b3f28";
+      x.beginPath();
+      x.arc(cx, wallTop - 46, 26, 0, 6.28);
+      x.fill();
+      x.fillStyle = "#9fc2c9";
+      x.beginPath();
+      x.arc(cx, wallTop - 46, 21, 0, 6.28);
+      x.fill();
+      x.strokeStyle = "#f3efe6";
+      x.lineWidth = 2.5;
+      x.beginPath();
+      x.moveTo(cx - 21, wallTop - 46);
+      x.lineTo(cx + 21, wallTop - 46);
+      x.moveTo(cx, wallTop - 67);
+      x.lineTo(cx, wallTop - 25);
+      x.stroke();
+
+      return tex(c);
+    }
+
+    /* a Victorian glasshouse — opaque pale-teal glass so alphaTest stays crisp */
+    function makeGreenhouse() {
+      const c = document.createElement("canvas");
+      c.width = 460;
+      c.height = 420;
+      const x = c.getContext("2d")!;
+      const left = 70,
+        right = 390,
+        eaveY = 208,
+        baseY = 402,
+        ridgeY = 70,
+        cx = 230;
+      const roofYAt = (px: number) => (px < cx ? eaveY + (ridgeY - eaveY) * ((px - left) / (cx - left)) : eaveY + (ridgeY - eaveY) * ((right - px) / (right - cx)));
+
+      // shadow
+      x.fillStyle = "rgba(18,36,22,.18)";
+      x.beginPath();
+      x.ellipse(cx, 410, 190, 18, 0, 0, 6.28);
+      x.fill();
+
+      // opaque glass body + roof
+      const bg = x.createLinearGradient(0, eaveY, 0, baseY);
+      bg.addColorStop(0, "#d7ebe5");
+      bg.addColorStop(1, "#bcd9d1");
+      x.fillStyle = bg;
+      x.fillRect(left, eaveY, right - left, baseY - eaveY);
+      x.fillStyle = "#e0efe9";
+      x.beginPath();
+      x.moveTo(left, eaveY);
+      x.lineTo(cx, ridgeY);
+      x.lineTo(right, eaveY);
+      x.closePath();
+      x.fill();
+
+      // hint of plants behind the glass (clipped to the body)
+      x.save();
+      x.beginPath();
+      x.rect(left, eaveY, right - left, baseY - eaveY);
+      x.clip();
+      for (let i = 0; i < 28; i++) {
+        x.globalAlpha = 0.5;
+        x.fillStyle = pick(GREENS);
+        x.beginPath();
+        x.ellipse(left + rand() * (right - left), baseY - rand() * 96, 18 + rand() * 26, 26 + rand() * 30, 0, 0, 6.28);
+        x.fill();
+      }
+      for (let i = 0; i < 12; i++) {
+        x.globalAlpha = 0.55;
+        x.fillStyle = pick(["#e0533a", "#f4b400", "#e8a0bf", "#ffffff"]);
+        x.beginPath();
+        x.arc(left + rand() * (right - left), baseY - 20 - rand() * 72, 5 + rand() * 4, 0, 6.28);
+        x.fill();
+      }
+      x.restore();
+      x.globalAlpha = 1;
+
+      // diagonal glass sheen
+      x.strokeStyle = "rgba(255,255,255,.34)";
+      x.lineWidth = 7;
+      for (const s of [0, 1]) {
+        const ox = left + 26 + s * 150;
+        x.beginPath();
+        x.moveTo(ox, baseY - 10);
+        x.lineTo(ox + 92, eaveY + 12);
+        x.stroke();
+      }
+
+      // white-green frame: posts, body rails, roof bars, slopes
+      const frame = "#eef3ec";
+      x.strokeStyle = frame;
+      x.lineCap = "square";
+      x.lineWidth = 8;
+      x.beginPath();
+      for (const px of [left, left + (right - left) / 3, cx, right - (right - left) / 3, right]) {
+        x.moveTo(px, eaveY);
+        x.lineTo(px, baseY);
+      }
+      x.stroke();
+      x.lineWidth = 5;
+      for (const py of [eaveY, eaveY + (baseY - eaveY) / 2, baseY]) {
+        x.beginPath();
+        x.moveTo(left, py);
+        x.lineTo(right, py);
+        x.stroke();
+      }
+      x.lineWidth = 7; // roof slopes
+      x.beginPath();
+      x.moveTo(left, eaveY);
+      x.lineTo(cx, ridgeY);
+      x.lineTo(right, eaveY);
+      x.stroke();
+      x.lineWidth = 4; // horizontal roof glazing bars
+      for (const t of [0.4, 0.72]) {
+        const yl = eaveY + (ridgeY - eaveY) * t;
+        x.beginPath();
+        x.moveTo(left + (cx - left) * t, yl);
+        x.lineTo(right - (right - cx) * t, yl);
+        x.stroke();
+      }
+      x.lineWidth = 4; // central roof bar to ridge
+      x.beginPath();
+      x.moveTo(cx, ridgeY);
+      x.lineTo(cx, eaveY);
+      x.stroke();
+
+      // double glass door
+      const dw = 72,
+        dh = 122,
+        dx = cx - dw / 2,
+        dy = baseY - dh;
+      x.fillStyle = "#cfe6df";
+      x.fillRect(dx, dy, dw, dh);
+      x.strokeStyle = frame;
+      x.lineWidth = 6;
+      x.strokeRect(dx, dy, dw, dh);
+      x.lineWidth = 4;
+      x.beginPath();
+      x.moveTo(cx, dy);
+      x.lineTo(cx, baseY);
+      x.moveTo(dx, dy + dh * 0.5);
+      x.lineTo(dx + dw, dy + dh * 0.5);
+      x.stroke();
+
+      // ridge finial
+      x.fillStyle = frame;
+      x.beginPath();
+      x.arc(cx, ridgeY - 6, 7, 0, 6.28);
+      x.fill();
+      x.fillRect(cx - 2, ridgeY - 18, 4, 14);
+      void roofYAt;
+
+      return tex(c);
+    }
+
+    /* a repeating picket-fence panel (tiles horizontally along the garden edge) */
+    function makeFence() {
+      const c = document.createElement("canvas");
+      c.width = 256;
+      c.height = 128;
+      const x = c.getContext("2d")!;
+      const woodLo = "#cdbfa6",
+        woodHi = "#efe6d2";
+      const rail = (y: number, h: number) => {
+        const g = x.createLinearGradient(0, y, 0, y + h);
+        g.addColorStop(0, woodHi);
+        g.addColorStop(1, darken(woodLo, 0.12));
+        x.fillStyle = g;
+        x.fillRect(0, y, 256, h);
+      };
+      // two horizontal rails
+      rail(44, 13);
+      rail(86, 13);
+      // pickets with pointed tops
+      const picketW = 18,
+        gap = 14,
+        step = picketW + gap;
+      for (let px = 6; px < 256; px += step) {
+        const g = x.createLinearGradient(px, 0, px + picketW, 0);
+        g.addColorStop(0, woodHi);
+        g.addColorStop(0.5, "#e3d8c0");
+        g.addColorStop(1, darken(woodLo, 0.16));
+        x.fillStyle = g;
+        x.beginPath();
+        x.moveTo(px, 28);
+        x.lineTo(px + picketW / 2, 12);
+        x.lineTo(px + picketW, 28);
+        x.lineTo(px + picketW, 124);
+        x.lineTo(px, 124);
+        x.closePath();
+        x.fill();
+        x.strokeStyle = "rgba(70,54,30,.18)";
+        x.lineWidth = 1;
+        x.beginPath();
+        x.moveTo(px + picketW - 1, 28);
+        x.lineTo(px + picketW - 1, 124);
+        x.stroke();
+      }
+      return tex(c);
+    }
+
     function makeGround() {
       const c = document.createElement("canvas");
       c.width = c.height = 512;
@@ -605,6 +948,36 @@ export default function GardenCanvas() {
       tm.position.set(side * rr(7, 14), GROUND_Y + th / 2, rr(-70, -150));
       tm.userData = { ph: rr(0, 6.28), sway: rr(0.006, 0.014) };
       flowers.add(tm);
+    }
+
+    /* fixed-orientation architecture: a cottage + a glasshouse set back in the
+       beds, and a picket fence enclosing the garden along both outer edges.
+       These live in their own group so the per-frame billboard yaw never
+       touches them — buildings should read as buildings, not face the camera. */
+    const structures = new THREE.Group();
+    scene.add(structures);
+    const sf = MOBILE ? 0.85 : 1;
+    function addStructure(txt: THREE.Texture, h: number, wRatio: number, sx: number, sz: number, yaw: number) {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(h * wRatio, h), new THREE.MeshBasicMaterial({ map: txt, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide, depthWrite: true }));
+      m.position.set(sx, GROUND_Y + h / 2, sz);
+      m.rotation.y = yaw;
+      structures.add(m);
+    }
+    addStructure(makeHouse(), 12 * sf, 1.0, -24, -68, 0.4);
+    addStructure(makeGreenhouse(), 8.8 * sf, 460 / 420, 23, -100, -0.45);
+
+    // picket fence: one long tiled plane down each outer edge, facing inward
+    const fenceTex = makeFence();
+    fenceTex.wrapS = fenceTex.wrapT = THREE.RepeatWrapping;
+    const fenceSpan = Z_NEAR - Z_FAR;
+    fenceTex.repeat.set(fenceSpan / 3, 1);
+    const fenceMat = new THREE.MeshBasicMaterial({ map: fenceTex, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide, depthWrite: true });
+    for (const side of [-1, 1] as const) {
+      const fh = 1.6;
+      const fence = new THREE.Mesh(new THREE.PlaneGeometry(fenceSpan, fh), fenceMat);
+      fence.position.set(side * 26, GROUND_Y + fh / 2, (Z_NEAR + Z_FAR) / 2);
+      fence.rotation.y = (side * Math.PI) / 2;
+      structures.add(fence);
     }
 
     /* mondo-grass groundcover edging the path */
